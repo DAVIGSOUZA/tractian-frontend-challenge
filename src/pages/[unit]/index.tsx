@@ -1,4 +1,5 @@
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { AssetTree } from '@/components/AssetTree'
 import { getUnitData } from '@/helpers/getUnitData'
 import { buildTree } from '@/helpers/tree'
 import type { Item, UnitData } from '@/types'
@@ -39,7 +40,7 @@ export default function UnitPage({
   return (
     <div>
       <h1>Unidade de {unit}</h1>
-      <p>{JSON.stringify(assetsTree)}</p>
+      <AssetTree tree={assetsTree} />
     </div>
   )
 }
