@@ -1,7 +1,10 @@
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import type { ChangeEvent } from 'react'
+import { useState } from 'react'
 import { AssetTree } from '@/components/AssetTree'
 import { getUnitData } from '@/helpers/getUnitData'
 import { buildTree } from '@/helpers/tree'
+import { useDebounce } from '@/hooks/useDebounce'
 import type { Item, UnitData } from '@/types'
 
 type UnitPageProps = {
@@ -37,9 +40,20 @@ export default function UnitPage({
   unit,
   assetsTree,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const debouncedSearch = useDebounce((value: string) => console.log(value))
+
+  const handleSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+
+    debouncedSearch(e.target.value)
+  }
+
   return (
     <div>
       <h1>Unidade de {unit}</h1>
+      <input type="text" value={searchTerm} onChange={handleSearchTermChange} />
       <AssetTree tree={assetsTree} />
     </div>
   )
