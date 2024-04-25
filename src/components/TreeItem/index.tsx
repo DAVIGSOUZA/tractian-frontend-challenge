@@ -21,7 +21,7 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
 
   const hasChildren = item.children.length > 0
 
-  return (
+  return !item.omit ? (
     <div>
       <div
         className="flex"
@@ -39,5 +39,5 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
         </div>
       )}
     </div>
-  )
+  ) : null
 }

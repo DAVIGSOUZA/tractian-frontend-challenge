@@ -1,6 +1,6 @@
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import type { ChangeEvent } from 'react'
-import { useState } from 'react'
+import { type ChangeEvent, useEffect, useState } from 'react'
 import { AssetTree } from '@/components/AssetTree'
 import { getUnitData } from '@/helpers/getUnitData'
 import { buildTree } from '@/helpers/tree'
@@ -16,6 +16,7 @@ export const getServerSideProps: GetServerSideProps<UnitPageProps> = async (
   ctx,
 ) => {
   const unit = ctx.params?.unit as string
+  const searchTerm = ctx.query?.search as string | undefined
 
   const unitData: UnitData | undefined = getUnitData(unit)
 
@@ -26,6 +27,7 @@ export const getServerSideProps: GetServerSideProps<UnitPageProps> = async (
   const assetsTree = buildTree({
     locations: unitData.locations,
     assets: unitData.assets,
+    searchTerm,
   })
 
   return {
@@ -40,20 +42,45 @@ export default function UnitPage({
   unit,
   assetsTree,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
+  const router = useRouter()
 
-  const debouncedSearch = useDebounce((value: string) => console.log(value))
+  useEffect(() => {
+    setSearchInput('')
+  }, [unit])
 
-  const handleSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
+  const handleSearch = useDebounce((value: string) => {
+    const params = new URLSearchParams(searchParams)
 
-    debouncedSearch(e.target.value)
+    if (value) {
+      params.set('search', value)
+
+      router.push(`${pathname}?${params.toString()}`)
+    } else {
+      params.delete('search')
+
+      router.push(`${pathname}`)
+    }
+  })
+
+  const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value)
+
+    handleSearch(e.target.value)
   }
 
   return (
     <div>
       <h1>Unidade de {unit}</h1>
-      <input type="text" value={searchTerm} onChange={handleSearchTermChange} />
+      <input
+        type="text"
+        placeholder="Buscar Ativo ou Local"
+        value={searchInput}
+        onChange={handleSearchInput}
+      />
+
       <AssetTree tree={assetsTree} />
     </div>
   )

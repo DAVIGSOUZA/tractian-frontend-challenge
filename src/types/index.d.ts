@@ -18,11 +18,13 @@ export type Asset = {
 export type LocationItem = {
   type: 'location'
   children: Item[]
+  omit: boolean
 } & Location
 
 export type AssetItem = {
   type: 'asset' | 'component'
   children: Item[]
+  omit: boolean
 } & Asset
 
 export type Item = LocationItem | AssetItem
