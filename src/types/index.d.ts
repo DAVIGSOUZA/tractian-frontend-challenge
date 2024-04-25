@@ -1,3 +1,5 @@
+export type AssetType = 'location' | 'asset' | 'component'
+
 export type Location = {
   id: string
   name: string

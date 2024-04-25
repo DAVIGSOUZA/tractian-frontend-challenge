@@ -13,7 +13,7 @@ export const Icon: FC<IconParentProps> = ({
       width={`${width}`}
       height={`${height}`}
       viewBox={`${viewBox}`}
-      className={`fill-primary ${className}`}
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
       {children}
