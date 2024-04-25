@@ -1,4 +1,6 @@
+import { useSearchParams } from 'next/navigation'
 import { type FC, useState } from 'react'
+import { isSearchValid, searchMatcher } from '@/helpers/tree'
 import { ArrowIcon } from '@/icons/ArrowIcon'
 import { AssetIcon } from '@/icons/AssetIcon'
 import { ComponentIcon } from '@/icons/ComponentIcon'
@@ -18,6 +20,13 @@ const getIcon = (type: AssetType) =>
 
 export const TreeItem: FC<TreeItemProps> = ({ item }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const searchParams = useSearchParams()
+
+  const shouldDisplaySubitems = (item: Item) => {
+    const searchTerm = searchParams.get('search') ?? ''
+
+    return isSearchValid(searchTerm) && searchMatcher(searchTerm, item)
+  }
 
   const hasChildren = item.children.length > 0
 
@@ -37,7 +46,16 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
       {hasChildren && isOpen && (
         <div className="pl-8">
           {item.children.map((subItem) => (
-            <TreeItem key={subItem.id} item={{ ...subItem, display: true }} />
+            <TreeItem
+              key={subItem.id}
+              item={{
+                ...subItem,
+                display:
+                  subItem.children.length === 0 || shouldDisplaySubitems(item)
+                    ? true
+                    : subItem.display,
+              }}
+            />
           ))}
         </div>
       )}

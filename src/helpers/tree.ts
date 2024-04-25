@@ -7,7 +7,7 @@ const isRoot = (item: Item) =>
     item.parentId === null &&
     item.locationId === null)
 
-function mapIdToItem(dataArray: Item[]) {
+const mapIdToItem = (dataArray: Item[]) => {
   const idItemMap: Record<string, Item> = {}
 
   dataArray.forEach((item) => {
@@ -17,10 +17,10 @@ function mapIdToItem(dataArray: Item[]) {
   return idItemMap
 }
 
-const isSearchValid = (searchTerm: string | undefined) =>
+export const isSearchValid = (searchTerm: string | undefined) =>
   searchTerm != null && searchTerm !== ''
 
-const searchMatcher = (term: string, item: Item) =>
+export const searchMatcher = (term: string, item: Item) =>
   item.name.toLowerCase().includes(term.toLowerCase())
 
 const shouldDisplay = (searchTerm: string | undefined, item: Item) => {
@@ -41,7 +41,7 @@ const getParentItem = (item: Item, idItemMap: Record<string, Item>): Item => {
   return idItemMap[parentId]
 }
 
-function insertChildrenIntoParent(dataArray: Item[], searchTerm?: string) {
+const insertChildrenIntoParent = (dataArray: Item[], searchTerm?: string) => {
   const idItemMap: Record<string, Item> = mapIdToItem(dataArray)
 
   const result: Item[] = []
@@ -73,7 +73,7 @@ const displayParents = (arr: Item[]) => {
   })
 }
 
-export function buildTree({
+export const buildTree = ({
   locations,
   assets,
   searchTerm,
@@ -81,7 +81,7 @@ export function buildTree({
   locations: Location[]
   assets: Asset[]
   searchTerm?: string
-}) {
+}) => {
   const locationItems: LocationItem[] = locations.map((location) => ({
     ...location,
     children: [],
