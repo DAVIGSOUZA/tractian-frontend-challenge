@@ -17,24 +17,28 @@ function mapIdToItem(dataArray: Item[]) {
   return idItemMap
 }
 
-const shouldOmit = (searchTerm: string | undefined, item: Item) => {
-  let omit = false
+const isSearchValid = (searchTerm: string | undefined) =>
+  searchTerm != null && searchTerm !== ''
 
-  if (
-    searchTerm == null ||
-    searchTerm === '' ||
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  ) {
-    console.log({ omit, item })
+const searchMatcher = (term: string, item: Item) =>
+  item.name.toLowerCase().includes(term.toLowerCase())
 
-    return omit
+const shouldDisplay = (searchTerm: string | undefined, item: Item) => {
+  if (!isSearchValid(searchTerm) || searchMatcher(searchTerm as string, item)) {
+    return true
   }
 
-  omit = true
+  return false
+}
 
-  console.log({ omit, item })
+const getParentItem = (item: Item, idItemMap: Record<string, Item>): Item => {
+  if (item.type === 'location') {
+    return idItemMap[item.parentId as string]
+  }
 
-  return omit
+  const parentId = (item.locationId ?? item.parentId)!
+
+  return idItemMap[parentId]
 }
 
 function insertChildrenIntoParent(dataArray: Item[], searchTerm?: string) {
@@ -43,48 +47,30 @@ function insertChildrenIntoParent(dataArray: Item[], searchTerm?: string) {
   const result: Item[] = []
 
   dataArray.forEach((item) => {
-    const omit = shouldOmit(searchTerm, item)
+    item.display = shouldDisplay(searchTerm, item)
 
     if (isRoot(item)) {
       result.push({ ...item })
-    }
-
-    if (item.type === 'location' && item.parentId !== null) {
-      const parentItem = idItemMap[item.parentId]
-
-      parentItem.omit = omit
-
-      parentItem.children.push(item)
-    }
-
-    if (
-      item.type !== 'location' &&
-      (item.locationId !== null || item.parentId !== null)
-    ) {
-      const parentId = (item.locationId ?? item.parentId)!
-
-      const parentItem = idItemMap[parentId]
-
-      parentItem.omit = omit
+    } else {
+      const parentItem: Item = getParentItem(item, idItemMap)
 
       parentItem.children.push(item)
     }
   })
 
-  if (searchTerm != null && searchTerm !== '') {
-    return result.map((item) => {
-      if (
-        item.children.length === 0 &&
-        !item.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ) {
-        item.omit = true
-      }
-
-      return item
-    })
-  }
-
   return result
+}
+
+const displayParents = (arr: Item[]) => {
+  arr.forEach((item) => {
+    const child = item.children.find((child) => child.display === true)
+
+    if (child?.display) {
+      item.display = true
+    } else {
+      displayParents(item.children)
+    }
+  })
 }
 
 export function buildTree({
@@ -99,14 +85,14 @@ export function buildTree({
   const locationItems: LocationItem[] = locations.map((location) => ({
     ...location,
     children: [],
-    omit: false,
+    display: isSearchValid(searchTerm) ? false : true,
     type: 'location',
   }))
 
   const assetItems: Item[] = assets.map((item) => ({
     ...item,
     children: [],
-    omit: false,
+    display: isSearchValid(searchTerm) ? false : true,
     type: item.status == null ? 'asset' : 'component',
   }))
 
@@ -114,6 +100,10 @@ export function buildTree({
     [...locationItems, ...assetItems],
     searchTerm,
   )
+
+  if (isSearchValid(searchTerm)) {
+    displayParents(tree)
+  }
 
   return tree
 }

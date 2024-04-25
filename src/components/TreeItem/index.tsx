@@ -21,20 +21,23 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
 
   const hasChildren = item.children.length > 0
 
-  return !item.omit ? (
+  return item.display ? (
     <div>
       <div
         className="flex"
         onClick={() => setIsOpen((prevState) => !prevState)}
       >
         {hasChildren && <ArrowIcon className="fill-secondary" />}
+
         {getIcon(item.type)}
+
         <span>{item.name}</span>
       </div>
+
       {hasChildren && isOpen && (
         <div className="pl-8">
           {item.children.map((subItem) => (
-            <TreeItem key={subItem.id} item={subItem} />
+            <TreeItem key={subItem.id} item={{ ...subItem, display: true }} />
           ))}
         </div>
       )}

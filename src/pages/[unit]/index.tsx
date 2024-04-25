@@ -48,8 +48,8 @@ export default function UnitPage({
   const router = useRouter()
 
   useEffect(() => {
-    setSearchInput('')
-  }, [unit])
+    setSearchInput(searchParams.get('search') ?? '')
+  }, [searchParams, unit])
 
   const handleSearch = useDebounce((value: string) => {
     const params = new URLSearchParams(searchParams)
