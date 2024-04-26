@@ -119,7 +119,7 @@ export default function UnitPage({
 
       <button className="flex" onClick={() => handleFilter('energy')}>
         <ThunderboltIcon />
-        <span>Sendor de Energia</span>
+        <span>Sensor de Energia</span>
       </button>
 
       <button className="flex" onClick={() => handleFilter('critical')}>
