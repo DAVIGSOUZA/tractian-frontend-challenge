@@ -3,6 +3,8 @@ import { type FC, useState } from 'react'
 import { isSearchValid, searchMatcher } from '@/helpers/tree'
 import { ArrowIcon } from '@/icons/ArrowIcon'
 import { AssetIcon } from '@/icons/AssetIcon'
+import { BoltIcon } from '@/icons/BoltIcon'
+import { CircleIcon } from '@/icons/CircleIcon'
 import { ComponentIcon } from '@/icons/ComponentIcon'
 import { LocationIcon } from '@/icons/LocationIcon'
 import type { AssetType, Item } from '@/types'
@@ -41,6 +43,22 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
         {getIcon(item.type)}
 
         <span>{item.name}</span>
+
+        {item.type === 'component' && item.sensorType !== 'energy' && (
+          <CircleIcon
+            className={
+              item.status === 'operating' ? 'bg-[#52C41A]' : 'bg-red-500'
+            }
+          />
+        )}
+
+        {item.type === 'component' && item.sensorType === 'energy' && (
+          <BoltIcon
+            className={
+              item.status === 'operating' ? 'fill-[#52C41A]' : 'fill-red-500'
+            }
+          />
+        )}
       </div>
 
       {hasChildren && isOpen && (

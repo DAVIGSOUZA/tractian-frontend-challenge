@@ -5,6 +5,8 @@ import { AssetTree } from '@/components/AssetTree'
 import { getUnitData } from '@/helpers/getUnitData'
 import { buildTree } from '@/helpers/tree'
 import { useDebounce } from '@/hooks/useDebounce'
+import { AtentionIcon } from '@/icons/AtentionIcon'
+import { ThunderboltIcon } from '@/icons/ThunderBoltIcon'
 import type { Item, UnitData } from '@/types'
 
 type UnitPageProps = {
@@ -80,6 +82,16 @@ export default function UnitPage({
         value={searchInput}
         onChange={handleSearchInput}
       />
+
+      <button className="flex">
+        <ThunderboltIcon />
+        <span>Sendor de Energia</span>
+      </button>
+
+      <button className="flex">
+        <AtentionIcon />
+        <span>Crítico</span>
+      </button>
 
       <AssetTree tree={assetsTree} />
     </div>
