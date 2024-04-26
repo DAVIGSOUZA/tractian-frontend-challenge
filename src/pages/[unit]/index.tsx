@@ -19,6 +19,8 @@ export const getServerSideProps: GetServerSideProps<UnitPageProps> = async (
 ) => {
   const unit = ctx.params?.unit as string
   const searchTerm = ctx.query?.search as string | undefined
+  const energyQuery = ctx.query?.energy as string | undefined
+  const criticalQuery = ctx.query?.critical as string | undefined
 
   const unitData: UnitData | undefined = getUnitData(unit)
 
@@ -30,6 +32,8 @@ export const getServerSideProps: GetServerSideProps<UnitPageProps> = async (
     locations: unitData.locations,
     assets: unitData.assets,
     searchTerm,
+    onlyEnergySensors: energyQuery === 'true',
+    onlyCriticalStatus: criticalQuery === 'true',
   })
 
   return {
@@ -58,19 +62,49 @@ export default function UnitPage({
 
     if (value) {
       params.set('search', value)
-
-      router.push(`${pathname}?${params.toString()}`)
     } else {
       params.delete('search')
-
-      router.push(`${pathname}`)
     }
+
+    params.delete('energy')
+
+    params.delete('critical')
+
+    const path =
+      params.toString() !== '' ? `${pathname}?${params.toString()}` : pathname
+
+    router.push(path)
   })
 
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
 
     handleSearch(e.target.value)
+  }
+
+  const handleFilter = (filterType: 'energy' | 'critical') => {
+    const params = new URLSearchParams(searchParams)
+
+    const filterValue = params.get(filterType)
+
+    params.delete('search')
+
+    params.delete('energy')
+
+    params.delete('critical')
+
+    if (
+      (filterType === 'energy' && filterValue) ||
+      (filterType === 'critical' && filterValue)
+    ) {
+      router.push(pathname)
+
+      return
+    }
+
+    params.set(filterType, 'true')
+
+    router.push(`${pathname}?${params.toString()}`)
   }
 
   return (
@@ -83,12 +117,12 @@ export default function UnitPage({
         onChange={handleSearchInput}
       />
 
-      <button className="flex">
+      <button className="flex" onClick={() => handleFilter('energy')}>
         <ThunderboltIcon />
         <span>Sendor de Energia</span>
       </button>
 
-      <button className="flex">
+      <button className="flex" onClick={() => handleFilter('critical')}>
         <AtentionIcon />
         <span>Crítico</span>
       </button>
