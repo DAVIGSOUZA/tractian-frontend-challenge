@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Asset, Item, Location, LocationItem } from '@/types'
 
+type SearchOptions = {
+  searchTerm?: string
+  onlyEnergySensors: boolean
+  onlyCriticalStatus: boolean
+}
+
 const isRoot = (item: Item) =>
   (item.type === 'location' && item.parentId === null) ||
   (item.type !== 'location' &&
@@ -23,8 +29,19 @@ export const isSearchValid = (searchTerm: string | undefined) =>
 export const searchMatcher = (term: string, item: Item) =>
   item.name.toLowerCase().includes(term.toLowerCase())
 
-const shouldDisplay = (searchTerm: string | undefined, item: Item) => {
-  if (!isSearchValid(searchTerm) || searchMatcher(searchTerm as string, item)) {
+const shouldDisplay = (searchOptions: SearchOptions, item: Item) => {
+  if (searchOptions.onlyCriticalStatus && item.type === 'component') {
+    return item.status === 'alert'
+  }
+
+  if (searchOptions.onlyEnergySensors && item.type === 'component') {
+    return item.sensorType === 'energy'
+  }
+
+  if (
+    !isSearchValid(searchOptions.searchTerm) ||
+    searchMatcher(searchOptions.searchTerm as string, item)
+  ) {
     return true
   }
 
@@ -41,13 +58,16 @@ const getParentItem = (item: Item, idItemMap: Record<string, Item>): Item => {
   return idItemMap[parentId]
 }
 
-const insertChildrenIntoParent = (dataArray: Item[], searchTerm?: string) => {
+const insertChildrenIntoParent = (
+  dataArray: Item[],
+  searchOptions: SearchOptions,
+) => {
   const idItemMap: Record<string, Item> = mapIdToItem(dataArray)
 
   const result: Item[] = []
 
   dataArray.forEach((item) => {
-    item.display = shouldDisplay(searchTerm, item)
+    item.display = shouldDisplay(searchOptions, item)
 
     if (isRoot(item)) {
       result.push({ ...item })
@@ -77,10 +97,14 @@ export const buildTree = ({
   locations,
   assets,
   searchTerm,
+  onlyEnergySensors = false,
+  onlyCriticalStatus = false,
 }: {
   locations: Location[]
   assets: Asset[]
   searchTerm?: string
+  onlyEnergySensors?: boolean
+  onlyCriticalStatus?: boolean
 }) => {
   const locationItems: LocationItem[] = locations.map((location) => ({
     ...location,
@@ -96,10 +120,11 @@ export const buildTree = ({
     type: item.status == null ? 'asset' : 'component',
   }))
 
-  const tree = insertChildrenIntoParent(
-    [...locationItems, ...assetItems],
+  const tree = insertChildrenIntoParent([...locationItems, ...assetItems], {
     searchTerm,
-  )
+    onlyEnergySensors,
+    onlyCriticalStatus,
+  })
 
   if (isSearchValid(searchTerm)) {
     displayParents(tree)
