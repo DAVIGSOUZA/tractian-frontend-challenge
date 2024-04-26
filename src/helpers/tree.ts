@@ -87,20 +87,21 @@ const insertChildrenIntoParent = (
   return result
 }
 
-const displayParents = (arr: Item[], parentItem?: Item) => {
+const displayParents = (arr: Item[], parentDisplay = false) => {
   arr.forEach((item) => {
-    const child = item.children.find((child) => child.display === true)
+    if (item.children.length > 0) {
+      const childDisplay = displayParents(
+        item.children,
+        item.display || parentDisplay,
+      )
 
-    if (child?.display) {
-      item.display = true
-
-      if (parentItem != null) {
-        parentItem.display = true
+      if (childDisplay) {
+        item.display = true
       }
-    } else {
-      displayParents(item.children, item)
     }
   })
+
+  return arr.some((item) => item.display)
 }
 
 export const buildTree = ({
