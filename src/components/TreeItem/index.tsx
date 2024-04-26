@@ -1,5 +1,6 @@
-import { useSearchParams } from 'next/navigation'
-import { type FC, useState } from 'react'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { type FC, useEffect, useState } from 'react'
 import { isSearchValid, searchMatcher } from '@/helpers/tree'
 import { ArrowIcon } from '@/icons/ArrowIcon'
 import { AssetIcon } from '@/icons/AssetIcon'
@@ -19,9 +20,25 @@ const getIcon = (type: AssetType) =>
     component: <ComponentIcon className="fill-primary" />,
   })[type]
 
+const initialIsOpen = (searchParams: ReadonlyURLSearchParams) => {
+  const energyFilter = searchParams.get('energy')
+  const criticalFilter = searchParams.get('critical')
+
+  if (energyFilter === 'true' || criticalFilter === 'true') {
+    return true
+  }
+
+  return false
+}
+
 export const TreeItem: FC<TreeItemProps> = ({ item }) => {
-  const [isOpen, setIsOpen] = useState(false)
   const searchParams = useSearchParams()
+  const path = usePathname()
+  const [isOpen, setIsOpen] = useState(initialIsOpen(searchParams))
+
+  useEffect(() => {
+    setIsOpen(initialIsOpen(searchParams))
+  }, [path, searchParams])
 
   const shouldDisplaySubitems = (parentitem: Item, childItem: Item) => {
     const searchTerm = searchParams.get('search') ?? ''
