@@ -38,6 +38,10 @@ const shouldDisplay = (searchOptions: SearchOptions, item: Item) => {
     return item.sensorType === 'energy'
   }
 
+  if (searchOptions.onlyEnergySensors || searchOptions.onlyCriticalStatus) {
+    return false
+  }
+
   if (
     !isSearchValid(searchOptions.searchTerm) ||
     searchMatcher(searchOptions.searchTerm as string, item)
@@ -74,6 +78,8 @@ const insertChildrenIntoParent = (
     } else {
       const parentItem: Item = getParentItem(item, idItemMap)
 
+      parentItem.display = item.display
+
       parentItem.children.push(item)
     }
   })
@@ -81,14 +87,18 @@ const insertChildrenIntoParent = (
   return result
 }
 
-const displayParents = (arr: Item[]) => {
+const displayParents = (arr: Item[], parentItem?: Item) => {
   arr.forEach((item) => {
     const child = item.children.find((child) => child.display === true)
 
     if (child?.display) {
       item.display = true
+
+      if (parentItem != null) {
+        parentItem.display = true
+      }
     } else {
-      displayParents(item.children)
+      displayParents(item.children, item)
     }
   })
 }
@@ -126,7 +136,7 @@ export const buildTree = ({
     onlyCriticalStatus,
   })
 
-  if (isSearchValid(searchTerm)) {
+  if (isSearchValid(searchTerm) || onlyEnergySensors || onlyCriticalStatus) {
     displayParents(tree)
   }
 

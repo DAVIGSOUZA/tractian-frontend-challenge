@@ -4,7 +4,6 @@ import { isSearchValid, searchMatcher } from '@/helpers/tree'
 import { ArrowIcon } from '@/icons/ArrowIcon'
 import { AssetIcon } from '@/icons/AssetIcon'
 import { BoltIcon } from '@/icons/BoltIcon'
-import { CircleIcon } from '@/icons/CircleIcon'
 import { ComponentIcon } from '@/icons/ComponentIcon'
 import { LocationIcon } from '@/icons/LocationIcon'
 import type { AssetType, Item } from '@/types'
@@ -24,16 +23,19 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
   const [isOpen, setIsOpen] = useState(false)
   const searchParams = useSearchParams()
 
-  const shouldDisplaySubitems = (item: Item) => {
+  const shouldDisplaySubitems = (parentitem: Item, childItem: Item) => {
     const searchTerm = searchParams.get('search') ?? ''
 
-    return isSearchValid(searchTerm) && searchMatcher(searchTerm, item)
+    return (
+      isSearchValid(searchTerm) &&
+      (childItem.children.length === 0 || searchMatcher(searchTerm, parentitem))
+    )
   }
 
   const hasChildren = item.children.length > 0
 
   return item.display ? (
-    <div>
+    <>
       <div
         className="flex"
         onClick={() => setIsOpen((prevState) => !prevState)}
@@ -45,11 +47,9 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
         <span>{item.name}</span>
 
         {item.type === 'component' && item.sensorType !== 'energy' && (
-          <CircleIcon
-            className={
-              item.status === 'operating' ? 'bg-[#52C41A]' : 'bg-red-500'
-            }
-          />
+          <div
+            className={`h-2 w-2 rounded-full ${item.status === 'operating' ? 'bg-[#52C41A]' : 'bg-red-500'}`}
+          ></div>
         )}
 
         {item.type === 'component' && item.sensorType === 'energy' && (
@@ -68,15 +68,14 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
               key={subItem.id}
               item={{
                 ...subItem,
-                display:
-                  subItem.children.length === 0 || shouldDisplaySubitems(item)
-                    ? true
-                    : subItem.display,
+                display: shouldDisplaySubitems(item, subItem)
+                  ? true
+                  : subItem.display,
               }}
             />
           ))}
         </div>
       )}
-    </div>
+    </>
   ) : null
 }
