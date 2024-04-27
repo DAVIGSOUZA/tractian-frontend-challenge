@@ -1,17 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Asset, Item, Location, LocationItem } from '@/types'
-
-type SearchOptions = {
-  searchTerm?: string
-  onlyEnergySensors: boolean
-  onlyCriticalStatus: boolean
-}
-
-const isRoot = (item: Item) =>
-  (item.type === 'location' && item.parentId === null) ||
-  (item.type !== 'location' &&
-    item.parentId === null &&
-    item.locationId === null)
+import type {
+  Asset,
+  Item,
+  Location,
+  LocationItem,
+  SearchOptions,
+} from '@/types'
+import { isRoot, isSearchValid, shouldDisplay } from './validation'
 
 const mapIdToItem = (dataArray: Item[]) => {
   const idItemMap: Record<string, Item> = {}
@@ -21,35 +16,6 @@ const mapIdToItem = (dataArray: Item[]) => {
   })
 
   return idItemMap
-}
-
-export const isSearchValid = (searchTerm: string | undefined) =>
-  searchTerm != null && searchTerm !== ''
-
-export const searchMatcher = (term: string, item: Item) =>
-  item.name.toLowerCase().includes(term.toLowerCase())
-
-const shouldDisplay = (searchOptions: SearchOptions, item: Item) => {
-  if (searchOptions.onlyCriticalStatus && item.type === 'component') {
-    return item.status === 'alert'
-  }
-
-  if (searchOptions.onlyEnergySensors && item.type === 'component') {
-    return item.sensorType === 'energy'
-  }
-
-  if (searchOptions.onlyEnergySensors || searchOptions.onlyCriticalStatus) {
-    return false
-  }
-
-  if (
-    !isSearchValid(searchOptions.searchTerm) ||
-    searchMatcher(searchOptions.searchTerm as string, item)
-  ) {
-    return true
-  }
-
-  return false
 }
 
 const getParentItem = (item: Item, idItemMap: Record<string, Item>): Item => {

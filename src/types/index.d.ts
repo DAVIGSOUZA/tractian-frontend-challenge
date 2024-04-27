@@ -33,3 +33,9 @@ export type UnitData = {
   assets: Asset[]
   locations: Location[]
 }
+
+export type SearchOptions = {
+  searchTerm?: string
+  onlyEnergySensors: boolean
+  onlyCriticalStatus: boolean
+}
