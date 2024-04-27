@@ -1,7 +1,7 @@
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { type FC, useEffect, useState } from 'react'
-import { isSearchValid, searchMatcher } from '@/helpers/tree'
+import { isSearchValid, searchMatcher } from '@/helpers/validation'
 import { ArrowIcon } from '@/icons/ArrowIcon'
 import { AssetIcon } from '@/icons/AssetIcon'
 import { BoltIcon } from '@/icons/BoltIcon'
