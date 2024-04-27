@@ -54,32 +54,42 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
   return item.display ? (
     <>
       <div
-        className="flex"
+        className="mb-1 grid grid-cols-[16px_24px_1fr]"
         onClick={() => setIsOpen((prevState) => !prevState)}
       >
-        {hasChildren && <ArrowIcon className="fill-secondary" />}
+        <div className="flex h-6 items-center justify-center">
+          {hasChildren && (
+            <ArrowIcon
+              className={`fill-secondary ${!isOpen && '-rotate-90'}`}
+            />
+          )}
+        </div>
 
-        {getIcon(item.type)}
+        <div className="flex items-center justify-center">
+          {getIcon(item.type)}
+        </div>
 
-        <span>{item.name}</span>
+        <div className="flex items-center truncate">
+          <span className="truncate">{item.name}</span>
 
-        {item.type === 'component' && item.sensorType !== 'energy' && (
-          <div
-            className={`h-2 w-2 rounded-full ${item.status === 'operating' ? 'bg-[#52C41A]' : 'bg-red-500'}`}
-          ></div>
-        )}
+          {item.type === 'component' && item.sensorType !== 'energy' && (
+            <div
+              className={`ml-1 h-2 w-2 rounded-full ${item.status === 'operating' ? 'bg-[#52C41A]' : 'bg-red-500'}`}
+            ></div>
+          )}
 
-        {item.type === 'component' && item.sensorType === 'energy' && (
-          <BoltIcon
-            className={
-              item.status === 'operating' ? 'fill-[#52C41A]' : 'fill-red-500'
-            }
-          />
-        )}
+          {item.type === 'component' && item.sensorType === 'energy' && (
+            <BoltIcon
+              className={`ml-1 ${
+                item.status === 'operating' ? 'fill-[#52C41A]' : 'fill-red-500'
+              }`}
+            />
+          )}
+        </div>
       </div>
 
       {hasChildren && isOpen && (
-        <div className="pl-8">
+        <div className="border-card ml-2 border-l pl-4">
           {item.children.map((subItem) => (
             <TreeItem
               key={subItem.id}

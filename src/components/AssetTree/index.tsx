@@ -8,7 +8,7 @@ type AssetTreeProps = {
 
 export const AssetTree: FC<AssetTreeProps> = ({ tree }) => {
   return (
-    <div>
+    <div className="h-[calc(100%-48px)] overflow-y-scroll p-3">
       {tree.map((item) => (
         <TreeItem key={item.id} item={item} />
       ))}

@@ -41,7 +41,7 @@ export const PanelHeader: FC = () => {
   const isCriticalBtnActive = searchParams.get('critical') === 'true'
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="mb-3 flex items-center justify-between">
       <div className="flex items-center">
         <span className="mr-[7px] text-xl font-semibold">Ativos</span>
         <span className="text-sm capitalize text-[#77818C]">

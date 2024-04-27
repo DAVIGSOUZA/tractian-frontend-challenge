@@ -2,9 +2,11 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { type ChangeEvent, useEffect, useState } from 'react'
 import { AssetTree } from '@/components/AssetTree'
+import { Card } from '@/components/Card'
 import { getUnitData } from '@/helpers/getUnitData'
 import { buildTree } from '@/helpers/tree'
 import { useDebounce } from '@/hooks/useDebounce'
+import { SearchIcon } from '@/icons/SearchIcon'
 import type { Item, UnitData } from '@/types'
 
 type UnitPageProps = {
@@ -82,14 +84,20 @@ export default function UnitPage({
 
   return (
     <>
-      <input
-        type="text"
-        placeholder="Buscar Ativo ou Local"
-        value={searchInput}
-        onChange={handleSearchInput}
-      />
+      <Card className="h-[calc(100%-45px)] w-1/3">
+        <div className="border-card flex items-center justify-between gap-3 border-b p-3">
+          <input
+            className="w-full"
+            type="text"
+            placeholder="Buscar Ativo ou Local"
+            value={searchInput}
+            onChange={handleSearchInput}
+          />
+          <SearchIcon />
+        </div>
 
-      <AssetTree tree={assetsTree} />
+        <AssetTree tree={assetsTree} />
+      </Card>
     </>
   )
 }
