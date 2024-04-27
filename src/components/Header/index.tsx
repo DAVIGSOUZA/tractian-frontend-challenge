@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import type { FC } from 'react'
 import { UnitIcon } from '@/icons/UnitIcon'
+import { Logo } from '../Logo'
 
 export const Header: FC = () => {
   const { unit: unitParam } = useParams()
@@ -22,19 +23,23 @@ export const Header: FC = () => {
   ]
 
   return (
-    <header>
+    <header className="flex h-12 items-center justify-between bg-secondary px-4">
+      <Logo className="fill-white" />
+
       <nav className="flex gap-3">
         {units.map((unit) => (
           <div
             key={unit.label}
-            className={
+            className={`flex items-center rounded-sm px-2 py-1 text-white ${
               unit.href.includes(unitParam as string)
-                ? 'text-primary'
-                : undefined
-            }
+                ? 'bg-blue-500'
+                : 'bg-blue-900'
+            }`}
           >
-            <UnitIcon />
-            <Link href={unit.href}>{unit.label}</Link>
+            <UnitIcon className="fill-white" />
+            <Link className="ml-2" href={unit.href}>
+              {unit.label}
+            </Link>
           </div>
         ))}
       </nav>
