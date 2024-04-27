@@ -6,8 +6,8 @@ import type { Asset, AssetType, Location } from '@/types'
 import { Card } from '../Card'
 
 type AssetCardProps = {
-  asset?: Location | Asset
-  type?: AssetType
+  asset: Location | Asset | null
+  type: AssetType | null
   className?: string
 }
 
@@ -47,7 +47,7 @@ export const AssetCard: FC<AssetCardProps> = ({ asset, type, className }) => {
             alt={type ?? 'unit'}
             width={336}
             height={226}
-            className="rounded"
+            className="h-[226px] w-[336px] rounded"
           />
 
           <div className="grow pl-6">

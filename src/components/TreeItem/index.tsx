@@ -1,5 +1,5 @@
 import type { ReadonlyURLSearchParams } from 'next/navigation'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { type FC, useEffect, useState } from 'react'
 import { isSearchValid, searchMatcher } from '@/helpers/tree'
 import { ArrowIcon } from '@/icons/ArrowIcon'
@@ -20,12 +20,21 @@ const getIcon = (type: AssetType) =>
     component: <ComponentIcon className="fill-primary" />,
   })[type]
 
-const initialIsOpen = (searchParams: ReadonlyURLSearchParams) => {
+const initialIsOpen = (
+  searchParams: ReadonlyURLSearchParams,
+  prevState?: boolean,
+) => {
   const energyFilter = searchParams.get('energy')
   const criticalFilter = searchParams.get('critical')
+  const assetType = searchParams.get('type')
+  const assetId = searchParams.get('id')
 
   if (energyFilter === 'true' || criticalFilter === 'true') {
     return true
+  }
+
+  if (assetType != null && assetId != null) {
+    return prevState
   }
 
   return false
@@ -33,12 +42,14 @@ const initialIsOpen = (searchParams: ReadonlyURLSearchParams) => {
 
 export const TreeItem: FC<TreeItemProps> = ({ item }) => {
   const searchParams = useSearchParams()
-  const path = usePathname()
+  const pathname = usePathname()
+  const router = useRouter()
+
   const [isOpen, setIsOpen] = useState(initialIsOpen(searchParams))
 
   useEffect(() => {
-    setIsOpen(initialIsOpen(searchParams))
-  }, [path, searchParams])
+    setIsOpen((prevState) => initialIsOpen(searchParams, prevState))
+  }, [pathname, searchParams])
 
   const shouldDisplaySubitems = (parentitem: Item, childItem: Item) => {
     const searchTerm = searchParams.get('search') ?? ''
@@ -51,11 +62,25 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
 
   const hasChildren = item.children.length > 0
 
+  const handleClick = (item: Item) => {
+    setIsOpen((prevState) => !prevState)
+
+    const params = new URLSearchParams(searchParams)
+
+    params.set('type', item.type)
+
+    params.set('id', item.id)
+
+    const path = `${pathname}?${params.toString()}`
+
+    router.push(path)
+  }
+
   return item.display ? (
     <>
       <div
         className="mb-1 grid grid-cols-[16px_24px_1fr]"
-        onClick={() => setIsOpen((prevState) => !prevState)}
+        onClick={() => handleClick(item)}
       >
         <div className="flex h-6 items-center justify-center">
           {hasChildren && (

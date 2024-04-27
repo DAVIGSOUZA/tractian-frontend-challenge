@@ -1,18 +1,14 @@
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { type ChangeEvent, useEffect, useState } from 'react'
 import { AssetCard } from '@/components/AssetCard'
-import { AssetTree } from '@/components/AssetTree'
-import { Card } from '@/components/Card'
+import { AssetTreeCard } from '@/components/AssetTreeCard'
 import { getUnitData } from '@/helpers/getUnitData'
 import { buildTree } from '@/helpers/tree'
-import { useDebounce } from '@/hooks/useDebounce'
-import { SearchIcon } from '@/icons/SearchIcon'
-import type { Item, UnitData } from '@/types'
+import type { Asset, AssetType, Item, Location, UnitData } from '@/types'
 
 type UnitPageProps = {
-  unit: string
   assetsTree: Item[]
+  asset: Location | Asset | null
+  type: AssetType | null
 }
 
 export const getServerSideProps: GetServerSideProps<UnitPageProps> = async (
@@ -22,11 +18,28 @@ export const getServerSideProps: GetServerSideProps<UnitPageProps> = async (
   const searchTerm = ctx.query?.search as string | undefined
   const energyQuery = ctx.query?.energy as string | undefined
   const criticalQuery = ctx.query?.critical as string | undefined
+  const idQuery = ctx.query?.id as string | undefined
+  const typeQuery = ctx.query?.type as AssetType | undefined
 
   const unitData: UnitData | undefined = getUnitData(unit)
 
   if (unit == null || unitData == null) {
     return { notFound: true }
+  }
+
+  let asset: Location | Asset | null = null
+
+  if (idQuery != null && typeQuery != null) {
+    const assetFinded =
+      typeQuery !== 'location'
+        ? unitData.assets.find((item) => item.id === idQuery)
+        : unitData.locations.find((item) => item.id === idQuery)
+
+    if (typeof assetFinded === 'undefined') {
+      asset = null
+    } else {
+      asset = assetFinded
+    }
   }
 
   const assetsTree = buildTree({
@@ -39,68 +52,23 @@ export const getServerSideProps: GetServerSideProps<UnitPageProps> = async (
 
   return {
     props: {
-      unit,
       assetsTree,
+      asset,
+      type: typeQuery ?? null,
     },
   }
 }
 
 export default function UnitPage({
-  unit,
   assetsTree,
+  asset,
+  type,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [searchInput, setSearchInput] = useState('')
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const router = useRouter()
-
-  useEffect(() => {
-    setSearchInput(searchParams.get('search') ?? '')
-  }, [searchParams, unit])
-
-  const handleSearch = useDebounce((value: string) => {
-    const params = new URLSearchParams(searchParams)
-
-    if (value) {
-      params.set('search', value)
-    } else {
-      params.delete('search')
-    }
-
-    params.delete('energy')
-
-    params.delete('critical')
-
-    const path =
-      params.toString() !== '' ? `${pathname}?${params.toString()}` : pathname
-
-    router.push(path)
-  })
-
-  const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value)
-
-    handleSearch(e.target.value)
-  }
-
   return (
     <div className="flex h-[calc(100%-45px)]">
-      <Card className="h-full w-1/3">
-        <div className="border-card flex items-center justify-between gap-3 border-b p-3">
-          <input
-            className="w-full"
-            type="text"
-            placeholder="Buscar Ativo ou Local"
-            value={searchInput}
-            onChange={handleSearchInput}
-          />
-          <SearchIcon />
-        </div>
+      <AssetTreeCard assetsTree={assetsTree} className="h-full w-1/3" />
 
-        <AssetTree tree={assetsTree} />
-      </Card>
-
-      <AssetCard className="ml-2 grow" />
+      <AssetCard className="ml-2 grow" asset={asset} type={type} />
     </div>
   )
 }

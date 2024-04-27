@@ -21,6 +21,10 @@ export const PanelHeader: FC = () => {
 
     params.delete('critical')
 
+    params.delete('type')
+
+    params.delete('id')
+
     if (
       (filterType === 'energy' && filterValue) ||
       (filterType === 'critical' && filterValue)
