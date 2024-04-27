@@ -50,7 +50,7 @@ export const AssetCard: FC<AssetCardProps> = ({ asset, type, className }) => {
             className="rounded"
           />
 
-          <div className="p-6">
+          <div className="grow pl-6">
             <div className="border-card mb-6 border-b pb-6">
               <p className="mb-2 font-semibold">Tipo de Equipamento</p>
               <p className="text-gray-500">Lorem ipsum</p>
