@@ -18,7 +18,7 @@ export const AssetCard: FC<AssetCardProps> = ({ asset, type, className }) => {
 
   return (
     <Card className={`${className}`}>
-      <div className="border-card flex items-center border-b px-4 py-[14px]">
+      <div className="flex items-center border-b border-card px-4 py-[14px]">
         <span className="text-lg font-semibold">
           {asset != null ? asset.name : unitLabel}
         </span>
@@ -41,17 +41,19 @@ export const AssetCard: FC<AssetCardProps> = ({ asset, type, className }) => {
       </div>
 
       <div className="p-6">
-        <div className="border-card mb-6 flex items-center border-b pb-6">
+        <div className="mb-6 flex items-center border-b border-card pb-6">
           <Image
             src={`/images/${type ?? 'unit'}.jpg`}
             alt={type ?? 'unit'}
             width={336}
             height={226}
             className="h-[226px] w-[336px] rounded"
+            priority
+            fetchPriority="high"
           />
 
           <div className="grow pl-6">
-            <div className="border-card mb-6 border-b pb-6">
+            <div className="mb-6 border-b border-card pb-6">
               <p className="mb-2 font-semibold">Tipo de Equipamento</p>
               <p className="text-gray-500">Lorem ipsum</p>
             </div>

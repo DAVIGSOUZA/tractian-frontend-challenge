@@ -1,6 +1,7 @@
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import type { FC } from 'react'
+import { appSearchParams } from '@/constants'
 import { AtentionIcon } from '@/icons/AtentionIcon'
 import { ThunderboltIcon } from '@/icons/ThunderBoltIcon'
 import { PanelButton } from './PanelButton'
@@ -15,15 +16,9 @@ export const PanelHeader: FC = () => {
 
     const filterValue = params.get(filterType)
 
-    params.delete('search')
-
-    params.delete('energy')
-
-    params.delete('critical')
-
-    params.delete('type')
-
-    params.delete('id')
+    for (const [key] of Object.entries(appSearchParams)) {
+      params.delete(key)
+    }
 
     if (
       (filterType === 'energy' && filterValue) ||
@@ -41,8 +36,10 @@ export const PanelHeader: FC = () => {
 
   const unitLabel = pathname.slice(1)
 
-  const isEnergyBtnActive = searchParams.get('energy') === 'true'
-  const isCriticalBtnActive = searchParams.get('critical') === 'true'
+  const isEnergyBtnActive = searchParams.get(appSearchParams.energy) === 'true'
+
+  const isCriticalBtnActive =
+    searchParams.get(appSearchParams.critical) === 'true'
 
   return (
     <div className="mb-3 flex items-center justify-between">

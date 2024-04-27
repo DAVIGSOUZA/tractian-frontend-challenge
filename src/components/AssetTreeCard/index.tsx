@@ -2,6 +2,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import type { ChangeEvent, FC } from 'react'
 import { useEffect, useState } from 'react'
+import { appSearchParams } from '@/constants'
 import { useDebounce } from '@/hooks/useDebounce'
 import { SearchIcon } from '@/icons/SearchIcon'
 import type { Item } from '@/types'
@@ -22,26 +23,25 @@ export const AssetTreeCard: FC<AssetTreeCardProps> = ({
   const pathname = usePathname()
   const router = useRouter()
 
-  useEffect(() => {
-    setSearchInput('')
-  }, [pathname])
+  useEffect(
+    () => setSearchInput(searchParams.get(appSearchParams.search) ?? ''),
+    [pathname, searchParams],
+  )
 
   const handleSearch = useDebounce((value: string) => {
     const params = new URLSearchParams(searchParams)
+    const { critical, energy, id, search, type } = appSearchParams
+    const searchParamsToDelete = [critical, energy, id, type]
 
     if (value) {
-      params.set('search', value)
+      params.set(search, value)
     } else {
-      params.delete('search')
+      params.delete(search)
     }
 
-    params.delete('energy')
-
-    params.delete('critical')
-
-    params.delete('type')
-
-    params.delete('id')
+    searchParamsToDelete.forEach((searchParam) => {
+      params.delete(searchParam)
+    })
 
     const path =
       params.toString() !== '' ? `${pathname}?${params.toString()}` : pathname
@@ -57,7 +57,7 @@ export const AssetTreeCard: FC<AssetTreeCardProps> = ({
 
   return (
     <Card className={className}>
-      <div className="border-card flex items-center justify-between gap-3 border-b p-3">
+      <div className="flex items-center justify-between gap-3 border-b border-card p-3">
         <input
           className="w-full"
           type="text"

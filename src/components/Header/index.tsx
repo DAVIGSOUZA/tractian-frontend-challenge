@@ -1,33 +1,19 @@
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import type { FC } from 'react'
+import { appUnits } from '@/constants'
 import { UnitIcon } from '@/icons/UnitIcon'
 import { Logo } from '../Logo'
 
 export const Header: FC = () => {
   const { unit: unitParam } = useParams()
 
-  const units = [
-    {
-      label: 'Jaguar Unit',
-      href: '/jaguar',
-    },
-    {
-      label: 'Apex Unit',
-      href: '/apex',
-    },
-    {
-      label: 'Tobias Unit',
-      href: '/tobias',
-    },
-  ]
-
   return (
     <header className="flex h-12 items-center justify-between bg-secondary px-4">
       <Logo className="fill-white" />
 
       <nav className="flex gap-3">
-        {units.map((unit) => (
+        {appUnits.map((unit) => (
           <Link
             href={unit.href}
             key={unit.label}

@@ -1,6 +1,7 @@
 import type { ReadonlyURLSearchParams } from 'next/navigation'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { type FC, useEffect, useState } from 'react'
+import { appSearchParams } from '@/constants'
 import { isSearchValid, searchMatcher } from '@/helpers/validation'
 import { ArrowIcon } from '@/icons/ArrowIcon'
 import { AssetIcon } from '@/icons/AssetIcon'
@@ -24,10 +25,10 @@ const initialIsOpen = (
   searchParams: ReadonlyURLSearchParams,
   prevState?: boolean,
 ) => {
-  const energyFilter = searchParams.get('energy')
-  const criticalFilter = searchParams.get('critical')
-  const assetType = searchParams.get('type')
-  const assetId = searchParams.get('id')
+  const energyFilter = searchParams.get(appSearchParams.energy)
+  const criticalFilter = searchParams.get(appSearchParams.critical)
+  const assetType = searchParams.get(appSearchParams.type)
+  const assetId = searchParams.get(appSearchParams.id)
 
   if (energyFilter === 'true' || criticalFilter === 'true') {
     return true
@@ -44,15 +45,15 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const router = useRouter()
-
   const [isOpen, setIsOpen] = useState(initialIsOpen(searchParams))
+  const hasChildren = item.children.length > 0
 
   useEffect(() => {
     setIsOpen((prevState) => initialIsOpen(searchParams, prevState))
   }, [pathname, searchParams])
 
   const shouldDisplaySubitems = (parentitem: Item, childItem: Item) => {
-    const searchTerm = searchParams.get('search') ?? ''
+    const searchTerm = searchParams.get(appSearchParams.search) ?? ''
 
     return (
       isSearchValid(searchTerm) &&
@@ -60,16 +61,14 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
     )
   }
 
-  const hasChildren = item.children.length > 0
-
   const handleClick = (item: Item) => {
     setIsOpen((prevState) => !prevState)
 
     const params = new URLSearchParams(searchParams)
 
-    params.set('type', item.type)
+    params.set(appSearchParams.type, item.type)
 
-    params.set('id', item.id)
+    params.set(appSearchParams.id, item.id)
 
     const path = `${pathname}?${params.toString()}`
 
@@ -78,7 +77,7 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
 
   return item.display ? (
     <>
-      <div
+      <button
         className="mb-1 grid grid-cols-[16px_24px_1fr]"
         onClick={() => handleClick(item)}
       >
@@ -111,10 +110,10 @@ export const TreeItem: FC<TreeItemProps> = ({ item }) => {
             />
           )}
         </div>
-      </div>
+      </button>
 
       {hasChildren && isOpen && (
-        <div className="border-card ml-2 border-l pl-4">
+        <div className="ml-2 border-l border-card pl-4">
           {item.children.map((subItem) => (
             <TreeItem
               key={subItem.id}
