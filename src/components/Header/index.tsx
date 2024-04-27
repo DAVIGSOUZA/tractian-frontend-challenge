@@ -28,7 +28,8 @@ export const Header: FC = () => {
 
       <nav className="flex gap-3">
         {units.map((unit) => (
-          <div
+          <Link
+            href={unit.href}
             key={unit.label}
             className={`flex items-center rounded-sm px-2 py-1 text-white ${
               unit.href.includes(unitParam as string)
@@ -37,10 +38,8 @@ export const Header: FC = () => {
             }`}
           >
             <UnitIcon className="fill-white" />
-            <Link className="ml-2" href={unit.href}>
-              {unit.label}
-            </Link>
-          </div>
+            <span className="ml-2">{unit.label}</span>
+          </Link>
         ))}
       </nav>
     </header>

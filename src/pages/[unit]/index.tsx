@@ -5,8 +5,6 @@ import { AssetTree } from '@/components/AssetTree'
 import { getUnitData } from '@/helpers/getUnitData'
 import { buildTree } from '@/helpers/tree'
 import { useDebounce } from '@/hooks/useDebounce'
-import { AtentionIcon } from '@/icons/AtentionIcon'
-import { ThunderboltIcon } from '@/icons/ThunderBoltIcon'
 import type { Item, UnitData } from '@/types'
 
 type UnitPageProps = {
@@ -82,34 +80,8 @@ export default function UnitPage({
     handleSearch(e.target.value)
   }
 
-  const handleFilter = (filterType: 'energy' | 'critical') => {
-    const params = new URLSearchParams(searchParams)
-
-    const filterValue = params.get(filterType)
-
-    params.delete('search')
-
-    params.delete('energy')
-
-    params.delete('critical')
-
-    if (
-      (filterType === 'energy' && filterValue) ||
-      (filterType === 'critical' && filterValue)
-    ) {
-      router.push(pathname)
-
-      return
-    }
-
-    params.set(filterType, 'true')
-
-    router.push(`${pathname}?${params.toString()}`)
-  }
-
   return (
-    <div>
-      <h1>Unidade de {unit}</h1>
+    <>
       <input
         type="text"
         placeholder="Buscar Ativo ou Local"
@@ -117,17 +89,7 @@ export default function UnitPage({
         onChange={handleSearchInput}
       />
 
-      <button className="flex" onClick={() => handleFilter('energy')}>
-        <ThunderboltIcon />
-        <span>Sensor de Energia</span>
-      </button>
-
-      <button className="flex" onClick={() => handleFilter('critical')}>
-        <AtentionIcon />
-        <span>Crítico</span>
-      </button>
-
       <AssetTree tree={assetsTree} />
-    </div>
+    </>
   )
 }
