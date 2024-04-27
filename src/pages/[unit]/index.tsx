@@ -1,6 +1,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { type ChangeEvent, useEffect, useState } from 'react'
+import { AssetCard } from '@/components/AssetCard'
 import { AssetTree } from '@/components/AssetTree'
 import { Card } from '@/components/Card'
 import { getUnitData } from '@/helpers/getUnitData'
@@ -83,8 +84,8 @@ export default function UnitPage({
   }
 
   return (
-    <>
-      <Card className="h-[calc(100%-45px)] w-1/3">
+    <div className="flex h-[calc(100%-45px)]">
+      <Card className="h-full w-1/3">
         <div className="border-card flex items-center justify-between gap-3 border-b p-3">
           <input
             className="w-full"
@@ -98,6 +99,8 @@ export default function UnitPage({
 
         <AssetTree tree={assetsTree} />
       </Card>
-    </>
+
+      <AssetCard className="ml-2 grow" />
+    </div>
   )
 }
