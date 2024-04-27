@@ -18,9 +18,14 @@ https://tractian-frontend-challenge-nine.vercel.app/
 
 ## Stack
 
-Dependency management: Yarn
-Framework: Next.js
-Typing: Typescript
-Styles: Tailwind
-Linting/Formatting: Eslint, Prettier
-Git hooks: Husky
+**Dependency management:** Yarn
+
+**Framework:** Next.js
+
+**Typing:** Typescript
+
+**Styles:** Tailwind
+
+**Linting/Formatting:** Eslint, Prettier
+
+**Git hooks:** Husky
