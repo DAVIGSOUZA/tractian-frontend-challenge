@@ -4,6 +4,8 @@
 
 Tree View Application that shows companies Assets.
 
+![image](https://github.com/DAVIGSOUZA/tractian-frontend-challenge/assets/69723573/0526ab7d-2781-4d78-b360-d4e5ac3da0c2)
+
 ## Deploy
 
 https://tractian-frontend-challenge-nine.vercel.app/
